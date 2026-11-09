@@ -29,10 +29,28 @@ Run `setup-design-index` before `create-requirements`. The requirement skill sto
 
 ## Install for other repos
 
-`install.sh` symlinks both skills into `~/.grok/skills/`, `~/.agents/skills/`, and `~/.claude/skills/`. A session in another repo, such as plant-tracking, can then run `/setup-design-index` and `/create-requirements`.
+`./install.sh` asks whether to install for your user account or for one repository. `./install.sh uninstall` asks the same question before it removes links.
+
+For your user account, every repository you open can see the skills:
+
+- `~/.agents/skills/` for Grok, Codex, and OpenCode
+- `~/.claude/skills/` for Claude Code
+
+For a repository, sessions in that repository can see the skills:
+
+- `.agents/skills/` for Grok, Codex, and OpenCode
+- `.claude/skills/` for Claude Code
+
+In Grok or Claude Code, run `/setup-design-index` or `/create-requirements`. In Codex, use `$setup-design-index` or `$create-requirements`. In OpenCode, ask it to use the skill by name.
 
 ```bash
 ./install.sh
+./install.sh --user
+./install.sh --repo /path/to/repo
 ```
 
-The script refuses to replace a destination that is not already a symlink to this checkout.
+Pass `--user` or `--repo PATH` to skip the prompt. The same flags work with `uninstall`.
+
+The command replaces a regular file or a symlink to another checkout. It exits when the destination is a real directory, and when the repository is this checkout. The skills already live in this checkout's `.agents/skills/`.
+
+Uninstall removes a path only when it is a symlink to this checkout, including a dangling link that names that skill. A user-account uninstall also removes a matching link under `~/.grok/skills/` left by an older run of this script. A missing path is left unmentioned. A regular file, a directory, and a symlink to another checkout stay in place, and so does this checkout.
