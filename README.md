@@ -1,6 +1,6 @@
 # software-toolbox
 
-Skills for writing requirements against a repo's design documents.
+Skills for writing requirements against a repo's design documents, and for analyzing review feedback before a code change.
 
 ## Skills
 
@@ -8,8 +8,9 @@ Skills for writing requirements against a repo's design documents.
 | --- | --- |
 | `setup-design-index` | Finds the design documents in a software repo and writes `knowledge/designs/index.yaml` after you approve the list. |
 | `create-requirements` | Writes `knowledge/requirements/<slug>.md`, one file per subject. The slug comes from the proposal. The skill checks `knowledge/requirements/` before writing, reads the design index, cites those constraints, and records the change to current behavior and one scenario per must-have. |
+| `analyze-review-feedback` | Analyzes review feedback and proposes a testing strategy. It does not change code until you approve the fix. |
 
-A session opened in this repo loads both skills from `.agents/skills/`.
+A session opened in this repo loads these skills from `.agents/skills/`.
 
 ## Files a software repo gains
 
@@ -27,6 +28,8 @@ knowledge/requirements/mark-plant-as-dead.md
 
 Run `setup-design-index` before `create-requirements`. The requirement skill stops when the index is missing.
 
+`analyze-review-feedback` writes nothing. It waits for approval before changing code.
+
 ## Install for other repos
 
 `./install.sh` asks whether to install for your user account or for one repository. `./install.sh uninstall` asks the same question before it removes links.
@@ -41,7 +44,7 @@ For a repository, sessions in that repository can see the skills:
 - `.agents/skills/` for Grok, Codex, and OpenCode
 - `.claude/skills/` for Claude Code
 
-In Grok or Claude Code, run `/setup-design-index` or `/create-requirements`. In Codex, use `$setup-design-index` or `$create-requirements`. In OpenCode, ask it to use the skill by name.
+In Grok or Claude Code, run `/setup-design-index`, `/create-requirements`, or `/analyze-review-feedback`. In Codex, use `$setup-design-index`, `$create-requirements`, or `$analyze-review-feedback`. In OpenCode, ask it to use the skill by name.
 
 ```bash
 ./install.sh

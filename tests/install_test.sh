@@ -4,7 +4,7 @@ set -euo pipefail
 
 root=$(cd "$(dirname "$0")/.." && pwd)
 install="${root}/install.sh"
-skills=(setup-design-index create-requirements)
+skills=(setup-design-index create-requirements analyze-review-feedback)
 failures=0
 
 fail() {
@@ -47,10 +47,11 @@ fresh_home() {
 }
 
 test_install_links_and_replaces() {
-  local home source_setup source_create relative
+  local home source_setup source_create source_analyze relative
   home=$(fresh_home)
   source_setup=$(skill_path setup-design-index)
   source_create=$(skill_path create-requirements)
+  source_analyze=$(skill_path analyze-review-feedback)
   ln -s /tmp/other-checkout "${home}/.agents/skills/setup-design-index"
   echo local > "${home}/.claude/skills/setup-design-index"
   ln -s "$source_create" "${home}/.agents/skills/create-requirements"
@@ -62,7 +63,9 @@ test_install_links_and_replaces() {
   assert_eq "$output" "linked ${home}/.agents/skills/setup-design-index -> ${source_setup}
 linked ${home}/.claude/skills/setup-design-index -> ${source_setup}
 linked ${home}/.agents/skills/create-requirements -> ${source_create}
-linked ${home}/.claude/skills/create-requirements -> ${source_create}" "install output"
+linked ${home}/.claude/skills/create-requirements -> ${source_create}
+linked ${home}/.agents/skills/analyze-review-feedback -> ${source_analyze}
+linked ${home}/.claude/skills/analyze-review-feedback -> ${source_analyze}" "install output"
   expect_link "${home}/.agents/skills/setup-design-index" setup-design-index
   expect_link "${home}/.claude/skills/setup-design-index" setup-design-index
   expect_link "${home}/.agents/skills/create-requirements" create-requirements
@@ -253,11 +256,12 @@ PY
 }
 
 test_repo_install_and_uninstall() {
-  local home repo source_setup source_create user_link
+  local home repo source_setup source_create source_analyze user_link
   home=$(fresh_home)
   repo=$(mktemp -d)
   source_setup=$(skill_path setup-design-index)
   source_create=$(skill_path create-requirements)
+  source_analyze=$(skill_path analyze-review-feedback)
   user_link="${home}/.agents/skills/setup-design-index"
   ln -s "$source_setup" "$user_link"
 
@@ -266,7 +270,9 @@ test_repo_install_and_uninstall() {
   assert_eq "$output" "linked ${repo}/.agents/skills/setup-design-index -> ${source_setup}
 linked ${repo}/.claude/skills/setup-design-index -> ${source_setup}
 linked ${repo}/.agents/skills/create-requirements -> ${source_create}
-linked ${repo}/.claude/skills/create-requirements -> ${source_create}" "repo install output"
+linked ${repo}/.claude/skills/create-requirements -> ${source_create}
+linked ${repo}/.agents/skills/analyze-review-feedback -> ${source_analyze}
+linked ${repo}/.claude/skills/analyze-review-feedback -> ${source_analyze}" "repo install output"
   expect_link "${repo}/.agents/skills/setup-design-index" setup-design-index
   expect_link "${repo}/.claude/skills/setup-design-index" setup-design-index
   expect_link "${repo}/.agents/skills/create-requirements" create-requirements
@@ -278,7 +284,9 @@ linked ${repo}/.claude/skills/create-requirements -> ${source_create}" "repo ins
   assert_eq "$output" "Removed ${repo}/.agents/skills/setup-design-index
 Removed ${repo}/.claude/skills/setup-design-index
 Removed ${repo}/.agents/skills/create-requirements
-Removed ${repo}/.claude/skills/create-requirements" "repo uninstall output"
+Removed ${repo}/.claude/skills/create-requirements
+Removed ${repo}/.agents/skills/analyze-review-feedback
+Removed ${repo}/.claude/skills/analyze-review-feedback" "repo uninstall output"
   if [[ -L ${repo}/.agents/skills/setup-design-index ]]; then
     fail "repo link survived uninstall"
   fi
@@ -313,6 +321,7 @@ test_prompt_chooses_user_or_repo() {
   assert_eq "$status" 0 "prompt user status"
   expect_link "${home}/.agents/skills/setup-design-index" setup-design-index
   expect_link "${home}/.claude/skills/create-requirements" create-requirements
+  expect_link "${home}/.agents/skills/analyze-review-feedback" analyze-review-feedback
   if [[ $output != *"Choice [u/r]:"* ]]; then
     fail "prompt user did not ask for a choice"
   fi
