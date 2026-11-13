@@ -10,17 +10,21 @@ argument-hint: "what to build"
 
 # Create a requirement
 
-Turn a proposal into one requirements file. Record what to build and why. The design documents constrain it. Do not design the implementation, allocate a ticket id, choose a commit type, set a priority, or move a status.
+Turn a proposal into one requirements file per subject. Record what to build and why. The design documents constrain it. Do not design the implementation, allocate a ticket id, choose a commit type, set a priority, or move a status.
 
 The proposal is the text after `/create-requirements`. If it is missing, ask what they want built.
 
 ## Name the file
 
-Propose a title, a lowercase kebab-case slug, and the path `knowledge/requirements/<slug>.md`. Derive the slug from the subject of the proposal. Drop a leading ticket id such as `PROJ-0016`; the slug is the subject. Example: "mark a plant as dead" becomes `knowledge/requirements/mark-plant-as-dead.md`.
+A subject is one behavior. Propose a title, a lowercase kebab-case slug, and the path `knowledge/requirements/<slug>.md` for each subject. Derive the slug from that subject. Drop a leading ticket id such as `PROJ-0016`. Example: "mark a plant as dead" becomes `knowledge/requirements/mark-plant-as-dead.md`.
 
-Wait for the user to confirm or edit the title and slug.
+Wait once for the user to confirm or edit every title and slug. When more than one subject was confirmed, complete the rest of this workflow for the first slug through its write confirmation, then take each remaining slug through that same workflow, one at a time. Each file gets its own brief, gap question, and draft confirmation.
 
-If that file already exists, read it and continue that requirement. Keep its `created_at`. Do not add a numeric suffix unless the user says this is a different requirement.
+## Read existing requirements
+
+If `knowledge/requirements/` is missing, there is nothing to read. Otherwise read the frontmatter of each `*.md` file there: `title`, `slug`, and `design_docs`. Read the body only when the title or slug shares the proposal's subject.
+
+When that file is the same subject, propose continuing it and wait. Do not add a numeric suffix unless the user says this is a different requirement. On an update, keep `created_at` and every section the user did not change. `design_docs` keeps paths already listed. Add a path read in this pass. Remove a path only when the user says the requirement no longer depends on it. Refresh `updated_at` when you write.
 
 ## Read the design index
 
@@ -34,32 +38,33 @@ Read each selected file. For a long document, read the sections that bear on the
 
 ## Brief the designs
 
+After the designs are selected, read the body of any other requirement whose `design_docs` intersect those paths.
+
 Before asking for anything else, show:
 
 - each path you read, and why it matched
 - constraints this requirement has to respect, each tied to its path and taken from that document
-- conflicts between the proposal and a design
+- conflicts between the proposal and a design, or with another requirement
+- related requirements: the file this pass continues, and any file that cites a design this requirement also uses
 
-Report a conflict. Do not resolve it by redesigning. Ask the user whether to change the requirement to match the design, record the conflict as unresolved, or override the design for this requirement. Record an override explicitly.
+Report a conflict. Do not resolve it by redesigning. Ask the user whether to change this requirement to match, record the conflict as unresolved, or override for this requirement. Record an override explicitly, and name the design path or the requirement path. A shared design with no contradiction goes under Related requirements and does not block.
 
 ## Fill the gaps
 
-Ask only for what the proposal and the designs have not already answered. Put the missing items in one message and wait:
+Ask, in one message, only for what would change the requirement and is still missing:
 
 - the problem, why it matters, and who needs it
 - must-have, nice-to-have, and out of scope
 - constraints beyond the designs
-- acceptance criteria
-- research questions for a later planning pass
-- related resources
+- a scenario for each must-have that lacks one
 
-If the user names a code path to mimic, record the path under Related resources. Do not read implementation files.
+Wait for the answer. When a research question comes up, record it under Research questions and leave it for the later planning pass. If the user names a code path to mimic, record the path under Related resources. Do not read implementation files.
 
 ## Confirm and write
 
 Show the full requirement. Wait for confirmation. Then create `knowledge/requirements/` if needed and write `knowledge/requirements/<slug>.md`.
 
-Set `created_at` and `updated_at` to the current UTC time as `YYYY-MM-DDTHH:MM:SSZ`, taken from the system clock. On an update, keep `created_at` and refresh `updated_at`. `design_docs` lists only paths you read.
+For a new file, set `created_at` and `updated_at` to the current UTC time as `YYYY-MM-DDTHH:MM:SSZ`, taken from the system clock. `design_docs` lists the paths read in this pass. On an update, apply Read existing requirements.
 
 ```markdown
 ---
@@ -84,6 +89,16 @@ design_docs:
 ### Conflicts
 - Unresolved: proposal says X; `path` says Y
 - Override: this requirement departs from `path` because …
+- Unresolved: proposal says X; `knowledge/requirements/<slug>.md` says Y
+
+### Related requirements
+- `knowledge/requirements/<slug>.md` — cites the same design
+
+## Change to current behavior
+
+- Adds: a recorded death state for a plant
+- Changes: `knowledge/architecture/decisions/ADR-0006-data-persistence-strategy.md` says records are kept; this requirement keeps the row and sets a terminal state
+- Removes: `knowledge/architecture/decisions/ADR-0006-data-persistence-strategy.md` allowed deleting the row; this requirement no longer allows that
 
 ## Problem
 
@@ -105,7 +120,7 @@ design_docs:
 
 ## Success criteria
 
-- [ ] Criterion
+- [ ] When the user marks a plant as dead, the plant stays in the record and is excluded from the active list
 
 ## Research questions
 
@@ -116,4 +131,8 @@ design_docs:
 ## Notes
 ```
 
-Omit a subsection that has nothing to say, including Conflicts and Mimic later. Tell the user the path you wrote. Leave committing to them.
+Change to current behavior is filled from the designs read in this pass. `Changes` and `Removes` cite the design path they come from. `Adds` is the behavior no design already describes. Omit an Adds, Changes, or Removes line that has nothing to say.
+
+Every must-have has at least one success criterion. Each criterion is one behavior: a trigger and an outcome. An edge case is its own criterion. A nice-to-have gets a criterion only when the user states one.
+
+Omit a subsection that has nothing to say, including Conflicts, Related requirements, and Mimic later. Tell the user the path you wrote. Leave committing to them.

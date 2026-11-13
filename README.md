@@ -7,7 +7,7 @@ Skills for writing requirements against a repo's design documents.
 | Skill | What it does |
 | --- | --- |
 | `setup-design-index` | Finds the design documents in a software repo and writes `knowledge/designs/index.yaml` after you approve the list. |
-| `create-requirements` | Writes `knowledge/requirements/<slug>.md`. The slug comes from the proposal. The skill reads the design index, opens the relevant documents, and cites their constraints in the requirement. |
+| `create-requirements` | Writes `knowledge/requirements/<slug>.md`, one file per subject. The slug comes from the proposal. The skill checks `knowledge/requirements/` before writing, reads the design index, cites those constraints, and records the change to current behavior and one scenario per must-have. |
 
 A session opened in this repo loads both skills from `.agents/skills/`.
 
@@ -19,7 +19,7 @@ A session opened in this repo loads both skills from `.agents/skills/`.
 knowledge/designs/index.yaml
 ```
 
-`create-requirements` writes one file per proposal:
+`create-requirements` writes one file per subject:
 
 ```text
 knowledge/requirements/mark-plant-as-dead.md
