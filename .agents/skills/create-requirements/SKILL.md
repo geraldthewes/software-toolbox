@@ -2,9 +2,10 @@
 name: create-requirements
 description: >
   Write a requirement named from the user's proposal, grounded in the repo's
-  design index. Use when the user runs /create-requirements, or asks to write,
-  draft, or capture a requirement for something they want built. This does not
-  create or manage tickets.
+  design index. The index is the in-repo file unless the user has chosen
+  per-repository user storage. Use when the user runs /create-requirements,
+  or asks to write, draft, or capture a requirement for something they want
+  built. This does not create or manage tickets.
 argument-hint: "what to build"
 ---
 
@@ -22,13 +23,29 @@ Wait once for the user to confirm or edit every title and slug. When more than o
 
 ## Read existing requirements
 
-If `knowledge/requirements/` is missing, there is nothing to read. Otherwise read the frontmatter of each `*.md` file there: `title`, `slug`, and `design_docs`. Read the body only when the title or slug shares the proposal's subject.
+If `<root>/knowledge/requirements/` is missing, there is nothing to read. `<root>` is the worktree root from the status command below. Otherwise read the frontmatter of each `*.md` file there: `title`, `slug`, and `design_docs`. Read the body only when the title or slug shares the proposal's subject.
 
 When that file is the same subject, propose continuing it and wait. Do not add a numeric suffix unless the user says this is a different requirement. On an update, keep `created_at` and every section the user did not change. `design_docs` keeps paths already listed. Add a path read in this pass. Remove a path only when the user says the requirement no longer depends on it. Refresh `updated_at` when you write.
 
 ## Read the design index
 
-Read `knowledge/designs/index.yaml` at the repo root. If it is missing, stop. Tell the user to run `/setup-design-index` in this repo. Do not invent an index and do not scan the tree to build one.
+Default to the current directory. If the user names a path, use that as `<repo>`.
+
+This skill file lives in the software-toolbox checkout. After resolving its symlink, the checkout root is the parent of `.agents`. Run:
+
+```bash
+python3 <checkout>/scripts/design_index.py status --repo <repo>
+```
+
+Use the `index` path it prints. `<root>` in that output is the worktree root. Do not build a config path yourself. If the command fails, stop and show the error. Do not guess a location.
+
+When `mode=repo` and `index_exists=false`, stop. Tell the user to run `/setup-design-index` in this repo. Do not invent an index and do not scan the tree to build one.
+
+When `mode=user` and `index_exists=false`, stop. Tell the user to run `/setup-design-index`. Do not write a requirement, do not run `choose`, and do not create either index.
+
+When `mode=user`, leave the repository's `knowledge/designs/index.yaml` unchanged.
+
+If the user asks to move the design index, tell them to run `setup-design-index`. Do not change the marker here.
 
 The index fields are `path`, `title`, `kind`, `status`, `summary`, and `topics`. `setup-design-index` owns how those fields are written.
 
@@ -62,7 +79,7 @@ Wait for the answer. When a research question comes up, record it under Research
 
 ## Confirm and write
 
-Show the full requirement. Wait for confirmation. Then create `knowledge/requirements/` if needed and write `knowledge/requirements/<slug>.md`.
+Show the full requirement. Wait for confirmation. Then create `<root>/knowledge/requirements/` if needed and write `<root>/knowledge/requirements/<slug>.md`. `<root>` is the worktree root from status. Do not write a requirement under the config home.
 
 For a new file, set `created_at` and `updated_at` to the current UTC time as `YYYY-MM-DDTHH:MM:SSZ`, taken from the system clock. `design_docs` lists the paths read in this pass. On an update, apply Read existing requirements.
 

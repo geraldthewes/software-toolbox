@@ -6,27 +6,35 @@ Skills for writing requirements against a repo's design documents, and for analy
 
 | Skill | What it does |
 | --- | --- |
-| `setup-design-index` | Finds the design documents in a software repo and writes `knowledge/designs/index.yaml` after you approve the list. |
-| `create-requirements` | Writes `knowledge/requirements/<slug>.md`, one file per subject. The slug comes from the proposal. The skill checks `knowledge/requirements/` before writing, reads the design index, cites those constraints, and records the change to current behavior and one scenario per must-have. |
+| `setup-design-index` | Finds the design documents in a software repo and writes the design index after you approve the list. The index stays in the repo until you choose per-repository user storage. |
+| `create-requirements` | Writes `knowledge/requirements/<slug>.md` in the current worktree, one file per subject. The slug comes from the proposal. The skill checks existing requirements before writing, reads the design index from the chosen location, cites those constraints, and records the change to current behavior and one scenario per must-have. |
 | `analyze-review-feedback` | Analyzes review feedback and proposes a testing strategy. It does not change code until you approve the fix. |
 
 A session opened in this repo loads these skills from `.agents/skills/`.
 
 ## Files a software repo gains
 
-`setup-design-index` writes:
+By default, `setup-design-index` writes the design index in the repository:
 
 ```text
 knowledge/designs/index.yaml
 ```
 
-`create-requirements` writes one file per subject:
+That stays the location until you choose otherwise. To keep the index out of a shared repository, tell `setup-design-index` to store it for your user. It records that choice under your config home (`$XDG_CONFIG_HOME`, or `~/.config`) and writes:
+
+```text
+software-toolbox/repositories/<host>/<owner>/<name>/designs/index.yaml
+```
+
+`<host>/<owner>/<name>` comes from the repository's `origin` URL, lowercased. Every worktree and branch of that remote uses the same file. User-level storage needs an `origin` remote. Another person has a different config home, so their index stays separate. While this choice is in effect, `setup-design-index` and `create-requirements` leave the repository's `knowledge/designs/index.yaml` unchanged.
+
+`create-requirements` writes one file per subject in the current worktree:
 
 ```text
 knowledge/requirements/mark-plant-as-dead.md
 ```
 
-Run `setup-design-index` before `create-requirements`. The requirement skill stops when the index is missing.
+Run `setup-design-index` before `create-requirements`. The requirement skill stops when the chosen index is missing. It does not store requirement files in your config home.
 
 `analyze-review-feedback` writes nothing. It waits for approval before changing code.
 
