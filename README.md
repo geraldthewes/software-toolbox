@@ -39,7 +39,7 @@ Run `setup-design-index` before `create-requirements` or `architecture-critique`
 
 `architecture-critique` reads that index and writes nothing. It does not edit the design documents.
 
-`analyze-review-feedback` writes nothing. It waits for approval before changing code.
+`analyze-review-feedback` changes no files until you approve the proposed fix. It does not commit.
 
 ## Install for other repos
 

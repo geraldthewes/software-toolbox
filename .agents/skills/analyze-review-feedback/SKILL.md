@@ -5,34 +5,38 @@ description: >
   testing strategy and wait for approval before implementing. Use when the
   user runs /analyze-review-feedback, or asks to analyze review feedback
   before changing code.
-disable-model-invocation: true
 argument-hint: "review feedback"
 ---
 
-# Analyze Review Feedback
+# Analyze review feedback
 
-This command is for analysis only. Do not modify any code files during Phase 1.
+Phase 1 reads the feedback and proposes a fix. It changes no files.
 
 The review feedback is the text after `/analyze-review-feedback`. If it is missing, ask for it.
 
-**Phase 1 — Analysis**
+## Phase 1 — Analysis
 
-Review that feedback: confirm the issue, explain it, critique the feedback, and suggest alternatives if appropriate. Present your findings clearly.
+Take each distinct finding on its own.
 
-Then assess what testing approach is most appropriate for the fix and propose one of these strategies:
+- Read the code and tests the finding points at. Quote the lines that confirm or refute it.
+- Explain the issue.
+- When the suggested fix is wrong, incomplete, or a worse change, say so and name a better one.
+- When the code does not support the finding, say so and propose no change for it.
 
-- **Red/Green TDD** — a new failing test drives the implementation (best when the fix requires new behavior to be specified)
-- **New test only** — add a test that verifies a correction to existing code (best when the production code is fine but test coverage is missing or weak)
-- **No new test** — implement the fix directly without touching tests (best when the change is cosmetic, documentation, or already covered by existing tests)
+For each finding that needs a change, pick one strategy and say why:
 
-Explain briefly why you chose that strategy.
+- **Red/Green TDD** — a new failing test drives the implementation. Use this when the fix adds or changes behavior that no test specifies.
+- **New test only** — add a test that the current production code already satisfies. Use this when the production code is fine and coverage is missing or weak.
+- **No new test** — change the code and leave the tests alone. Use this when the change is cosmetic or documentation, or existing tests already cover it.
 
-Present your findings, proposed fix, and recommended testing strategy. Then ask the user to confirm: proceed with implementation or discuss further? Do NOT implement anything until the user explicitly approves.
+Show the findings, the proposed fix, and the strategy. Ask whether to implement or keep discussing. Phase 2 applies only the proposal the user approves.
 
-**Phase 2 — Implementation (only after user approval)**
+## Phase 2 — Implementation
 
-Apply the fix using the approved testing strategy:
+Edit the current checkout. Use the test runner and checks that repo already uses. Leave committing to the user.
 
-- **Red/Green TDD**: write a failing test first (red), implement the fix to make it pass (green), confirm the test passes.
-- **New test only**: add the test, confirm it passes against the existing implementation.
-- **No new test**: implement the fix directly, confirm existing tests still pass.
+- **Red/Green TDD**: write the failing test first. Run it and show that it fails because of the finding. Then implement the fix, run the test again, and show that it passes.
+- **New test only**: add the test and run it against the existing implementation. Show that it passes. Leave production code unchanged.
+- **No new test**: make the fix. Run the existing tests that cover it and show that they pass.
+
+Show the commands and their output. An import error, a missing dependency, or a timeout is not a failing test for the finding.
