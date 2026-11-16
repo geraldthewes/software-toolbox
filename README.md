@@ -1,6 +1,6 @@
 # software-toolbox
 
-Skills for writing requirements against a repo's design documents, and for analyzing review feedback before a code change.
+Skills for writing requirements against a repo's design documents, critiquing those designs, and analyzing review feedback before a code change.
 
 ## Skills
 
@@ -8,6 +8,7 @@ Skills for writing requirements against a repo's design documents, and for analy
 | --- | --- |
 | `setup-design-index` | Finds the design documents in a software repo and writes the design index after you approve the list. The index stays in the repo until you choose per-repository user storage. |
 | `create-requirements` | Writes `knowledge/requirements/<slug>.md` in the current worktree, one file per subject. The slug comes from the proposal. The skill checks existing requirements before writing, reads the design index from the chosen location, cites those constraints, and records the change to current behavior and one scenario per must-have. |
+| `architecture-critique` | Critiques the design documents in the chosen design index and reports risks before implementation. It reads the index and writes nothing. |
 | `analyze-review-feedback` | Analyzes review feedback and proposes a testing strategy. It does not change code until you approve the fix. |
 
 A session opened in this repo loads these skills from `.agents/skills/`.
@@ -26,7 +27,7 @@ That stays the location until you choose otherwise. To keep the index out of a s
 software-toolbox/repositories/<host>/<owner>/<name>/designs/index.yaml
 ```
 
-`<host>/<owner>/<name>` comes from the repository's `origin` URL, lowercased. Every worktree and branch of that remote uses the same file. User-level storage needs an `origin` remote. Another person has a different config home, so their index stays separate. While this choice is in effect, `setup-design-index` and `create-requirements` leave the repository's `knowledge/designs/index.yaml` unchanged.
+`<host>/<owner>/<name>` comes from the repository's `origin` URL, lowercased. Every worktree and branch of that remote uses the same file. User-level storage needs an `origin` remote. Another person has a different config home, so their index stays separate. While this choice is in effect, `setup-design-index`, `create-requirements`, and `architecture-critique` leave the repository's `knowledge/designs/index.yaml` unchanged.
 
 `create-requirements` writes one file per subject in the current worktree:
 
@@ -34,7 +35,9 @@ software-toolbox/repositories/<host>/<owner>/<name>/designs/index.yaml
 knowledge/requirements/mark-plant-as-dead.md
 ```
 
-Run `setup-design-index` before `create-requirements`. The requirement skill stops when the chosen index is missing. It does not store requirement files in your config home.
+Run `setup-design-index` before `create-requirements` or `architecture-critique`. Both stop when the chosen index is missing. `create-requirements` does not store requirement files in your config home.
+
+`architecture-critique` reads that index and writes nothing. It does not edit the design documents.
 
 `analyze-review-feedback` writes nothing. It waits for approval before changing code.
 
@@ -52,7 +55,7 @@ For a repository, sessions in that repository can see the skills:
 - `.agents/skills/` for Grok, Codex, and OpenCode
 - `.claude/skills/` for Claude Code
 
-In Grok or Claude Code, run `/setup-design-index`, `/create-requirements`, or `/analyze-review-feedback`. In Codex, use `$setup-design-index`, `$create-requirements`, or `$analyze-review-feedback`. In OpenCode, ask it to use the skill by name.
+In Grok or Claude Code, run `/setup-design-index`, `/create-requirements`, `/architecture-critique`, or `/analyze-review-feedback`. In Codex, use `$setup-design-index`, `$create-requirements`, `$architecture-critique`, or `$analyze-review-feedback`. In OpenCode, ask it to use the skill by name.
 
 ```bash
 ./install.sh

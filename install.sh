@@ -7,7 +7,7 @@
 set -euo pipefail
 
 root=$(cd "$(dirname "$0")" && pwd)
-skills=(setup-design-index create-requirements analyze-review-feedback)
+skills=(setup-design-index create-requirements analyze-review-feedback architecture-critique)
 scope=
 repo_path=
 action=

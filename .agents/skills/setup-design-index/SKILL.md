@@ -1,17 +1,17 @@
 ---
 name: setup-design-index
 description: >
-  Index a software repo's design documents so /create-requirements can read
-  them. The index stays at knowledge/designs/index.yaml until the user
-  chooses per-repository user storage. Use when the user runs
-  /setup-design-index, or asks to index the designs, catalog the architecture,
-  or set a repo up for requirements.
+  Index a software repo's design documents so /create-requirements and
+  /architecture-critique can read them. The index stays at
+  knowledge/designs/index.yaml until the user chooses per-repository user
+  storage. Use when the user runs /setup-design-index, or asks to index the
+  designs, catalog the architecture, or set a repo up for requirements.
 argument-hint: "[repo path]"
 ---
 
 # Set up a design index
 
-Build the design index for one git repository. The index is the catalog `create-requirements` reads. Do not write a requirement. Do not edit the design documents. Do not commit unless the user asks.
+Build the design index for one git repository. The index is the catalog `create-requirements` and `architecture-critique` read. Do not write a requirement. Do not edit the design documents. Do not commit unless the user asks.
 
 ## Confirm the repo
 

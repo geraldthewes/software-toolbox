@@ -4,7 +4,7 @@ set -euo pipefail
 
 root=$(cd "$(dirname "$0")/.." && pwd)
 install="${root}/install.sh"
-skills=(setup-design-index create-requirements analyze-review-feedback)
+skills=(setup-design-index create-requirements analyze-review-feedback architecture-critique)
 failures=0
 
 fail() {
@@ -47,11 +47,12 @@ fresh_home() {
 }
 
 test_install_links_and_replaces() {
-  local home source_setup source_create source_analyze relative
+  local home source_setup source_create source_analyze source_critique relative
   home=$(fresh_home)
   source_setup=$(skill_path setup-design-index)
   source_create=$(skill_path create-requirements)
   source_analyze=$(skill_path analyze-review-feedback)
+  source_critique=$(skill_path architecture-critique)
   ln -s /tmp/other-checkout "${home}/.agents/skills/setup-design-index"
   echo local > "${home}/.claude/skills/setup-design-index"
   ln -s "$source_create" "${home}/.agents/skills/create-requirements"
@@ -65,7 +66,9 @@ linked ${home}/.claude/skills/setup-design-index -> ${source_setup}
 linked ${home}/.agents/skills/create-requirements -> ${source_create}
 linked ${home}/.claude/skills/create-requirements -> ${source_create}
 linked ${home}/.agents/skills/analyze-review-feedback -> ${source_analyze}
-linked ${home}/.claude/skills/analyze-review-feedback -> ${source_analyze}" "install output"
+linked ${home}/.claude/skills/analyze-review-feedback -> ${source_analyze}
+linked ${home}/.agents/skills/architecture-critique -> ${source_critique}
+linked ${home}/.claude/skills/architecture-critique -> ${source_critique}" "install output"
   expect_link "${home}/.agents/skills/setup-design-index" setup-design-index
   expect_link "${home}/.claude/skills/setup-design-index" setup-design-index
   expect_link "${home}/.agents/skills/create-requirements" create-requirements
@@ -256,12 +259,13 @@ PY
 }
 
 test_repo_install_and_uninstall() {
-  local home repo source_setup source_create source_analyze user_link
+  local home repo source_setup source_create source_analyze source_critique user_link
   home=$(fresh_home)
   repo=$(mktemp -d)
   source_setup=$(skill_path setup-design-index)
   source_create=$(skill_path create-requirements)
   source_analyze=$(skill_path analyze-review-feedback)
+  source_critique=$(skill_path architecture-critique)
   user_link="${home}/.agents/skills/setup-design-index"
   ln -s "$source_setup" "$user_link"
 
@@ -272,7 +276,9 @@ linked ${repo}/.claude/skills/setup-design-index -> ${source_setup}
 linked ${repo}/.agents/skills/create-requirements -> ${source_create}
 linked ${repo}/.claude/skills/create-requirements -> ${source_create}
 linked ${repo}/.agents/skills/analyze-review-feedback -> ${source_analyze}
-linked ${repo}/.claude/skills/analyze-review-feedback -> ${source_analyze}" "repo install output"
+linked ${repo}/.claude/skills/analyze-review-feedback -> ${source_analyze}
+linked ${repo}/.agents/skills/architecture-critique -> ${source_critique}
+linked ${repo}/.claude/skills/architecture-critique -> ${source_critique}" "repo install output"
   expect_link "${repo}/.agents/skills/setup-design-index" setup-design-index
   expect_link "${repo}/.claude/skills/setup-design-index" setup-design-index
   expect_link "${repo}/.agents/skills/create-requirements" create-requirements
@@ -286,7 +292,9 @@ Removed ${repo}/.claude/skills/setup-design-index
 Removed ${repo}/.agents/skills/create-requirements
 Removed ${repo}/.claude/skills/create-requirements
 Removed ${repo}/.agents/skills/analyze-review-feedback
-Removed ${repo}/.claude/skills/analyze-review-feedback" "repo uninstall output"
+Removed ${repo}/.claude/skills/analyze-review-feedback
+Removed ${repo}/.agents/skills/architecture-critique
+Removed ${repo}/.claude/skills/architecture-critique" "repo uninstall output"
   if [[ -L ${repo}/.agents/skills/setup-design-index ]]; then
     fail "repo link survived uninstall"
   fi
@@ -322,6 +330,7 @@ test_prompt_chooses_user_or_repo() {
   expect_link "${home}/.agents/skills/setup-design-index" setup-design-index
   expect_link "${home}/.claude/skills/create-requirements" create-requirements
   expect_link "${home}/.agents/skills/analyze-review-feedback" analyze-review-feedback
+  expect_link "${home}/.agents/skills/architecture-critique" architecture-critique
   if [[ $output != *"Choice [u/r]:"* ]]; then
     fail "prompt user did not ask for a choice"
   fi
