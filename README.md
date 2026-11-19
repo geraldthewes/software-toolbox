@@ -7,7 +7,7 @@ Skills for writing requirements against a repo's design documents, critiquing th
 | Skill | What it does |
 | --- | --- |
 | `setup-design-index` | Finds the design documents in a software repo and writes the design index after you approve the list. The index stays in the repo until you choose per-repository user storage. |
-| `create-requirements` | Writes `knowledge/requirements/<slug>.md` in the current worktree, one file per subject. The slug comes from the proposal. The skill checks existing requirements before writing, reads the design index from the chosen location, cites those constraints, and records the change to current behavior and one scenario per must-have. |
+| `create-requirements` | Writes `knowledge/requirements/<slug>.md` in the current worktree, one file per subject. The slug comes from the proposal. The skill checks existing requirements before writing, reads the design index from the chosen location, cites those constraints, and records the change to current behavior and one measurable scenario per must-have. A shipped change stays in that file as a delta. Out of scope records each deferred idea and why it waits. |
 | `architecture-critique` | Critiques the design documents in the chosen design index and reports risks before implementation. It reads the index and writes nothing. |
 | `analyze-review-feedback` | Analyzes review feedback and proposes a testing strategy. It does not change code until you approve the fix. |
 
@@ -34,6 +34,8 @@ software-toolbox/repositories/<host>/<owner>/<name>/designs/index.yaml
 ```text
 knowledge/requirements/mark-plant-as-dead.md
 ```
+
+A request that bundles several independently testable capabilities is split only after you approve a short breakdown, and each capability gets its own file. A change to a requirement that has already shipped stays in that file. After the file is written, the skill stops. Planning and code wait for a later turn.
 
 Run `setup-design-index` before `create-requirements` or `architecture-critique`. Both stop when the chosen index is missing. `create-requirements` does not store requirement files in your config home.
 
